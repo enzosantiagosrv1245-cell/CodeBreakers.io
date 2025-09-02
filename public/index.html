@@ -3,300 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeBreakers.io - Neural Network Survival Game</title>
+    <title>CodeBreakers.io</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
-    <meta name="description" content="CodeBreakers.io - Jogo multiplayer de sobrevivência e dedução em rede neural">
-    <meta name="keywords" content="jogo, multiplayer, neural, among us, brain.io, websocket">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <!-- Fundo animado -->
-    <div class="animated-bg">
-        <div class="neural-network">
-            <div class="node" style="--x: 10%; --y: 20%; --delay: 0s;"></div>
-            <div class="node" style="--x: 30%; --y: 40%; --delay: 0.5s;"></div>
-            <div class="node" style="--x: 70%; --y: 30%; --delay: 1s;"></div>
-            <div class="node" style="--x: 90%; --y: 60%; --delay: 1.5s;"></div>
-            <div class="node" style="--x: 50%; --y: 80%; --delay: 2s;"></div>
-            <div class="node" style="--x: 20%; --y: 70%; --delay: 2.5s;"></div>
-            <div class="connection"></div>
-        </div>
-        <div class="floating-data">
-            <div class="data-packet" style="--x: 15%; --delay: 0s;">01</div>
-            <div class="data-packet" style="--x: 45%; --delay: 1s;">10</div>
-            <div class="data-packet" style="--x: 75%; --delay: 2s;">11</div>
-            <div class="data-packet" style="--x: 25%; --delay: 3s;">01</div>
-            <div class="data-packet" style="--x: 85%; --delay: 4s;">10</div>
-        </div>
-    </div>
-
-    <!-- Tela de Login/Menu Principal -->
+    <!-- Background Animation -->
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Main Menu -->
     <div id="main-menu" class="screen active">
         <div class="container">
-            <div class="game-title">
-                <h1 class="title-text">
-                    <span class="code">Code</span><span class="breakers">Breakers</span><span class="io">.io</span>
-                </h1>
-                <p class="subtitle">🧠 Sobreviva na Rede Neural • Encontre os Vírus • Quebre o Código</p>
+            <div class="logo">
+                <h1>CODEBREAKERS</h1>
+                <p>Neural Network Battle</p>
             </div>
-
-            <div class="auth-container">
-                <!-- Formulário de Login -->
-                <div id="login-form" class="auth-form active">
-                    <h2>🔐 Fazer Login</h2>
-                    <div class="input-group">
-                        <input type="text" id="login-username" placeholder="Username" required>
-                        <span class="input-icon">👤</span>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="login-password" placeholder="Senha" required>
-                        <span class="input-icon">🔒</span>
-                    </div>
-                    <button id="login-btn" class="btn btn-primary">
-                        <span>Entrar na Rede</span>
-                        <div class="btn-glow"></div>
-                    </button>
-                    <p class="auth-switch">
-                        Não tem conta? <a href="#" id="show-register">Criar nova conta</a>
-                    </p>
-                </div>
-
-                <!-- Formulário de Registro -->
-                <div id="register-form" class="auth-form">
-                    <h2>🆕 Criar Conta</h2>
-                    <div class="input-group">
-                        <input type="text" id="register-username" placeholder="Username" required>
-                        <span class="input-icon">👤</span>
-                    </div>
-                    <div class="input-group">
-                        <input type="email" id="register-email" placeholder="Email (opcional)">
-                        <span class="input-icon">📧</span>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="register-password" placeholder="Senha" required>
-                        <span class="input-icon">🔒</span>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="register-confirm" placeholder="Confirmar Senha" required>
-                        <span class="input-icon">🔒</span>
-                    </div>
-                    <button id="register-btn" class="btn btn-secondary">
-                        <span>Criar Neurônio</span>
-                        <div class="btn-glow"></div>
-                    </button>
-                    <p class="auth-switch">
-                        Já tem conta? <a href="#" id="show-login">Fazer login</a>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Status de conexão -->
-            <div class="connection-status" id="connection-status">
-                <div class="status-dot"></div>
-                <span>Conectando à rede...</span>
+            
+            <div class="menu-buttons">
+                <button id="play-btn" class="btn btn-primary">PLAY</button>
+                <button id="login-btn" class="btn btn-secondary">LOGIN</button>
+                <button id="register-btn" class="btn btn-secondary">REGISTER</button>
             </div>
         </div>
     </div>
-
-    <!-- Menu do Jogo (após login) -->
-    <div id="game-menu" class="screen">
+    
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
         <div class="container">
-            <div class="game-header">
-                <h1 class="title-text">
-                    <span class="code">Code</span><span class="breakers">Breakers</span><span class="io">.io</span>
-                </h1>
+            <button id="back-btn" class="back-button">←</button>
+            
+            <div class="form-container">
+                <h2>LOGIN</h2>
+                <form id="login-form">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary">CONNECT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Register Screen -->
+    <div id="register-screen" class="screen">
+        <div class="container">
+            <button id="back-btn-register" class="back-button">←</button>
+            
+            <div class="form-container">
+                <h2>REGISTER</h2>
+                <form id="register-form">
+                    <input type="text" id="reg-username" placeholder="Username" required>
+                    <input type="email" id="reg-email" placeholder="Email (optional)">
+                    <input type="password" id="reg-password" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary">CREATE ACCOUNT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Lobby -->
+    <div id="lobby-screen" class="screen">
+        <div class="container">
+            <div class="lobby-header">
                 <div class="user-info">
-                    <span class="welcome">Bem-vindo, <span id="username-display"></span>!</span>
-                    <button id="logout-btn" class="btn btn-small">🚪 Sair</button>
+                    <span id="user-name">Player</span>
+                    <button id="logout" class="btn btn-small">Logout</button>
                 </div>
             </div>
-
-            <div class="menu-grid">
-                <!-- Jogar Agora -->
-                <div class="menu-card">
-                    <div class="card-icon">🎮</div>
-                    <h3>Jogar Agora</h3>
-                    <p>Entrar em uma partida aleatória</p>
-                    <button id="quick-play-btn" class="btn btn-primary">
-                        <span>Buscar Partida</span>
-                        <div class="btn-glow"></div>
-                    </button>
-                </div>
-
-                <!-- Criar Sala -->
-                <div class="menu-card">
-                    <div class="card-icon">🏠</div>
-                    <h3>Criar Sala</h3>
-                    <p>Crie uma sala privada</p>
-                    <div class="input-group">
-                        <input type="text" id="room-name" placeholder="Nome da Sala" maxlength="20">
+            
+            <div class="lobby-content">
+                <div class="rooms-section">
+                    <h3>ROOMS</h3>
+                    <div class="room-controls">
+                        <input type="text" id="room-id" placeholder="Room ID" maxlength="20">
+                        <button id="create-room" class="btn btn-secondary">CREATE</button>
+                        <button id="refresh-rooms" class="btn btn-secondary">REFRESH</button>
                     </div>
-                    <button id="create-room-btn" class="btn btn-secondary">
-                        <span>Criar Sala</span>
-                        <div class="btn-glow"></div>
-                    </button>
-                </div>
-
-                <!-- Entrar em Sala -->
-                <div class="menu-card">
-                    <div class="card-icon">🔍</div>
-                    <h3>Entrar em Sala</h3>
-                    <p>Digite o código da sala</p>
-                    <div class="input-group">
-                        <input type="text" id="room-code" placeholder="Código da Sala" maxlength="10">
-                    </div>
-                    <button id="join-room-btn" class="btn btn-accent">
-                        <span>Entrar</span>
-                        <div class="btn-glow"></div>
-                    </button>
-                </div>
-
-                <!-- Estatísticas -->
-                <div class="menu-card stats-card">
-                    <div class="card-icon">📊</div>
-                    <h3>Suas Stats</h3>
-                    <div class="stats-grid">
-                        <div class="stat">
-                            <span class="stat-number" id="games-played">0</span>
-                            <span class="stat-label">Jogos</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number" id="wins">0</span>
-                            <span class="stat-label">Vitórias</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number" id="tasks-completed">0</span>
-                            <span class="stat-label">Tarefas</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number" id="virus-wins">0</span>
-                            <span class="stat-label">Vírus</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Como Jogar -->
-            <div class="how-to-play">
-                <h3>🎯 Como Jogar</h3>
-                <div class="rules-grid">
-                    <div class="rule">
-                        <span class="rule-icon">🧠</span>
-                        <p><strong>Neurônios:</strong> Complete tarefas e colete dados para crescer</p>
-                    </div>
-                    <div class="rule">
-                        <span class="rule-icon">🦠</span>
-                        <p><strong>Vírus:</strong> Sabote a rede e elimine neurônios</p>
-                    </div>
-                    <div class="rule">
-                        <span class="rule-icon">🔧</span>
-                        <p><strong>Tarefas:</strong> Apenas neurônios reais conseguem completar</p>
-                    </div>
-                    <div class="rule">
-                        <span class="rule-icon">🗳️</span>
-                        <p><strong>Votação:</strong> Elimine suspeitos mas cuidado com os erros</p>
+                    <div id="rooms-list" class="rooms-list">
+                        <!-- Rooms will be loaded here -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Sala de Espera -->
-    <div id="waiting-room" class="screen">
-        <div class="container">
-            <div class="waiting-header">
-                <h2>🏠 Sala: <span id="room-name-display"></span></h2>
-                <div class="room-info">
-                    <span>Código: <strong id="room-code-display"></strong></span>
-                    <span>Jogadores: <span id="player-count">0</span>/15</span>
-                </div>
-            </div>
-
-            <div class="players-grid" id="players-list"></div>
-
-            <div class="waiting-controls">
-                <button id="start-game-btn" class="btn btn-primary" disabled>
-                    <span>Iniciar Jogo</span>
-                    <div class="btn-glow"></div>
-                </button>
-                <button id="leave-room-btn" class="btn btn-secondary">
-                    <span>Sair da Sala</span>
-                </button>
-            </div>
-
-            <div class="waiting-status">
-                <p>Aguardando mais jogadores... (mínimo 4)</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela do Jogo -->
+    
+    <!-- Game Screen -->
     <div id="game-screen" class="screen">
+        <!-- Game canvas and UI will go here -->
+        <canvas id="game-canvas"></canvas>
+        
         <div class="game-ui">
-            <!-- HUD Superior -->
-            <div class="game-hud">
-                <div class="hud-left">
-                    <div class="role-indicator" id="role-indicator">
-                        <span id="role-text">🧠 Neurônio</span>
-                    </div>
-                    <div class="network-health">
-                        <span>Saúde da Rede:</span>
-                        <div class="health-bar">
-                            <div class="health-fill" id="network-health-fill"></div>
-                        </div>
-                        <span id="network-health-text">100%</span>
-                    </div>
+            <div class="hud">
+                <div class="health-bar">
+                    <div class="health-fill" id="health-fill"></div>
+                    <span id="health-text">100%</span>
                 </div>
-                <div class="hud-right">
-                    <div class="player-stats">
-                        <span>Tamanho: <span id="player-size">20</span></span>
-                        <span>Dados: <span id="data-collected">0</span></span>
-                        <span>Tarefas: <span id="tasks-done">0</span></span>
-                    </div>
-                </div>
+                <div class="timer" id="timer">5:00</div>
+                <button id="emergency-btn" class="btn btn-danger">EMERGENCY</button>
             </div>
-
-            <!-- Canvas do Jogo -->
-            <canvas id="game-canvas" width="800" height="600"></canvas>
-
-            <!-- Painel de Tarefa -->
-            <div id="task-panel" class="task-panel hidden">
-                <div class="task-header">
-                    <h3 id="task-title">Tarefa</h3>
-                    <button id="close-task-btn" class="btn btn-small">❌</button>
-                </div>
-                <div class="task-content" id="task-content"></div>
-            </div>
-
-            <!-- Painel de Votação -->
-            <div id="voting-panel" class="voting-panel hidden">
-                <div class="voting-header">
-                    <h3>🗳️ Votação de Emergência</h3>
-                    <div class="voting-timer">30s</div>
-                </div>
-                <div class="voting-content">
-                    <p>Selecione um jogador suspeito para eliminar:</p>
-                    <div id="voting-players"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chat do Jogo -->
-        <div id="game-chat" class="game-chat hidden">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input">
-                <input type="text" id="chat-input" placeholder="Digite sua mensagem..." maxlength="100">
-                <button id="send-chat" class="btn btn-small">Enviar</button>
+            
+            <div class="players-list" id="players-list">
+                <!-- Players will be listed here -->
             </div>
         </div>
     </div>
-
-    <!-- Notificações -->
-    <div id="notifications-container"></div>
-
-    <!-- Scripts -->
-    <script src="/socket.io/socket.io.js"></script>
+    
+    <!-- Notifications -->
+    <div id="notifications"></div>
+    
     <script src="game.js"></script>
-    <script src="client.js"></script>
 </body>
 </html>
